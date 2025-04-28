@@ -73,32 +73,34 @@ describe("GET /api/article/:article_id", () => {
       });
   });
   test("404: responds with helpful msg when given valid type of article_id but article with that id does not exist", () => {
-    const articleId = 99;
+    const nonExistantArticleId = 99;
     return request(app)
-      .get(`/api/articles/${articleId}`)
+      .get(`/api/articles/${nonExistantArticleId}`)
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No article found for article_id: 99");
       });
   });
   test("400: responds with bad request msg  if sent invalid article_id type", () => {
+    const invalidArticleId = "bestone";
     return request(app)
-      .get("/api/articles/bestone")
+      .get(`/api/articles/${invalidArticleId}`)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
       });
   });
 });
-describe.skip("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: responds with array of articles with multiple specific properties", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((res) => {
         const articlesOutput = res.body.articles;
+        console.log(articlesOutput);
         expect(articlesOutput).toHaveLength(13);
-        topicsOutput.forEach((article) => {
+        articlesOutput.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
           expect(article).toHaveProperty("article_id");
