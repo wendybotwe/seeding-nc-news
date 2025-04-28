@@ -49,3 +49,44 @@ describe("GET /api/topics", () => {
       });
   });
 });
+describe("GET /api/article/:article_id", () => {
+  test("200: responds with article object for correct article_id", () => {
+    const articleId = 5;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .then((response) => {
+        const articleIdOutput = response.body.article;
+        expect(articleIdOutput.article_id).toBe(5);
+        expect(articleIdOutput.title).toBe(
+          "UNCOVERED: catspiracy to bring down democracy"
+        );
+        expect(articleIdOutput.author).toBe("rogersop");
+        expect(articleIdOutput.body).toBe(
+          "Bastet walks amongst us, and the cats are taking arms!"
+        );
+        expect(articleIdOutput.topic).toBe("cats");
+        expect(articleIdOutput.votes).toBe(0);
+        expect(articleIdOutput.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("404: responds with helpful msg when given valid type of article_id but article with that id does not exist", () => {
+    const articleId = 99;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No article found for article_id: 99");
+      });
+  });
+  test("400: responds with bad request msg  if sent invalid article_id type", () => {
+    return request(app)
+      .get("/api/articles/bestone")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});

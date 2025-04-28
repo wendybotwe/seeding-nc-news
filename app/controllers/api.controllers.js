@@ -1,5 +1,9 @@
 const endpoints = require("../../endpoints.json");
-const { selectTopics } = require("../models/api.models.js");
+const {
+  selectTopics,
+  selectArticlesyId,
+  selectArticlebyId,
+} = require("../models/api.models.js");
 
 exports.getApi = (req, res) => {
   res.status(200).send(endpoints);
@@ -8,11 +12,23 @@ exports.getApi = (req, res) => {
 exports.getTopics = (req, res, next) => {
   return selectTopics()
     .then((topics) => {
-      console.log(topics, "<< topics in the controller");
       res.status(200).send({ topics });
     })
     .catch((err) => {
-      console.log(err, "err in the controller");
+      next(err);
+    });
+};
+
+exports.getArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  console.log(article_id, "article_id in the controller");
+  selectArticlebyId(article_id)
+    .then((article) => {
+      console.log(article, "in the controller");
+      res.status(200).send({ article: article });
+    })
+    .catch((err) => {
+      console.log(err, "<< err in getArticleById controller");
       next(err);
     });
 };
