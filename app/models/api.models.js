@@ -8,11 +8,19 @@ exports.selectTopics = () => {
     });
 };
 
+exports.selectArticles = () => {
+  return db
+    .query("SELECT * FROM articles ORDER BY created_by DESC")
+    .then(({ rows }) => {
+      console.log(rows, "<<< rows in model");
+      return rows;
+    });
+};
+
 exports.selectArticlebyId = (articleId) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1", [articleId])
     .then(({ rows }) => {
-      console.log(rows, "<< rows in model");
       if (rows.length === 0) {
         return Promise.reject({
           status: 404,
