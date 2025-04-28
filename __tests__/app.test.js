@@ -90,3 +90,24 @@ describe("GET /api/article/:article_id", () => {
       });
   });
 });
+describe.skip("GET /api/articles", () => {
+  test("200: responds with array of articles with multiple specific properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        const articlesOutput = res.body.articles;
+        expect(articlesOutput).toHaveLength(13);
+        topicsOutput.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+});
