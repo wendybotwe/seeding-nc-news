@@ -185,7 +185,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("404: responds with helpful msg if sent non-existant article_id of correct type", () => {
+  test("404: responds with msg if sent non-existant article_id of correct type", () => {
     const newComment = {
       article_id: 99,
       username: "lurker",
@@ -197,6 +197,57 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Article or comment not found.");
+      });
+  });
+});
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: returns updated article when vote count is increased", () => {
+    const articleId = 9;
+    const IncreaseVotesBy = { inc_votes: 10 };
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send(IncreaseVotesBy)
+      .expect(200)
+      .then((response) => {
+        const updatedArticle = response.body.article;
+        expect(updatedArticle.article_id).toBe(articleId);
+        expect(updatedArticle.votes).toBe(10);
+      });
+  });
+  test("200: returns updated article when vote count is decreased", () => {
+    const articleId = 1;
+    const IncreaseVotesBy = { inc_votes: -50 };
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send(IncreaseVotesBy)
+      .expect(200)
+      .then((response) => {
+        const updatedArticle = response.body.article;
+        console.log(updatedArticle, "<< in test file");
+        expect(updatedArticle.article_id).toBe(articleId);
+        expect(updatedArticle.votes).toBe(50);
+      });
+  });
+  test("404: responds with bad request msg when non-existant article_id is used", () => {
+    const articleId = 99;
+    const IncreaseVotesBy = { inc_votes: 100 };
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send(IncreaseVotesBy)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found.");
+      });
+  });
+  test("400: responds with bad request msg if sent invalid inc_votes type", () => {
+    const articleId = 1;
+    const IncreaseVotesBy = { inc_votes: "loads" };
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send(IncreaseVotesBy)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

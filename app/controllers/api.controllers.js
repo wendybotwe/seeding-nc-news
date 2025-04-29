@@ -5,6 +5,7 @@ const {
   selectArticles,
   selectArticleCommentsByArticleId,
   insertComment,
+  updateVotesByArticleId,
 } = require("../models/api.models.js");
 
 exports.getApi = (req, res) => {
@@ -64,4 +65,17 @@ exports.postCommentByArticleId = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.patchVotesByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  if (typeof inc_votes !== "number") {
+    return res.status(400).send({ msg: "Bad request" });
+  }
+  updateVotesByArticleId(article_id, inc_votes)
+    .then((updatedArticle) => {
+      res.status(200).send({ article: updatedArticle });
+    })
+    .catch(next);
 };
