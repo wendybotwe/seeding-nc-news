@@ -6,6 +6,7 @@ const {
   getTopics,
   getArticleById,
   getArticles,
+  getArticleCommentsByArticleId,
 } = require("./app/controllers/api.controllers.js");
 
 app.use(express.json());
@@ -17,6 +18,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id", getArticleById);
+
+app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
 
 app.all("/api/*wrong", (req, res) => {
   res.status(404).send({ msg: "Path not found" });
