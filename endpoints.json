@@ -51,5 +51,13 @@
       "body": "I hate streaming noses",
       "article_id": 1
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a new comment for a particular article_id and returns that new comment to the user if successful",
+    "exampleResponse": {
+      "article_id": 2,
+      "author": "lurker",
+      "body": "This is a newly added comment. How marvellous!"
+    }
   }
 }

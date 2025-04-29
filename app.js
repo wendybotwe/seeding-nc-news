@@ -7,6 +7,7 @@ const {
   getArticleById,
   getArticles,
   getArticleCommentsByArticleId,
+  postCommentByArticleId,
 } = require("./app/controllers/api.controllers.js");
 
 app.use(express.json());
@@ -20,6 +21,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.all("/api/*wrong", (req, res) => {
   res.status(404).send({ msg: "Path not found" });
@@ -37,9 +40,15 @@ app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Bad request" });
   } else {
-    res.status(500).send({
-      msg: "Internal Server Error",
-    });
+    next(err);
+  }
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === "23503") {
+    res.status(404).send({ msg: "Article or comment not found." });
+  } else {
+    next(err);
   }
 });
 
