@@ -78,7 +78,7 @@ describe("GET /api/article/:article_id", () => {
       .get(`/api/articles/${nonExistantArticleId}`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No article found for article_id: 99");
+        expect(body.msg).toBe("No article found.");
       });
   });
   test("400: responds with bad request msg  if sent invalid article_id type", () => {
@@ -120,7 +120,6 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then((res) => {
         const commentsOutput = res.body.comments;
-        console.log(commentsOutput);
         expect(commentsOutput).toHaveLength(11);
         commentsOutput.forEach((comment) => {
           expect(comment).toHaveProperty("comment_id");
@@ -138,9 +137,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get(`/api/articles/${nonExistantArticleId}/comments`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          "No article or comments found for article_id: 99"
-        );
+        expect(body.msg).toBe("No article Found.");
       });
   });
   test("400: responds with bad request msg if sent invalid article_id type", () => {
@@ -150,6 +147,56 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: responds with new comment info", () => {
+    const newComment = {
+      article_id: 2,
+      username: "lurker",
+      body: "This is a newly added comment. How marvellous!",
+    };
+    return request(app)
+      .post(`/api/articles/${newComment.article_id}/comments`)
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const newlyCreatedComment = body.newComment;
+        expect(newlyCreatedComment.article_id).toBe(2);
+        expect(newlyCreatedComment.author).toBe("lurker");
+        expect(newlyCreatedComment.body).toBe(
+          "This is a newly added comment. How marvellous!"
+        );
+      });
+  });
+  test("400: responds with bad request msg if sent invalid article_id type", () => {
+    const newComment = {
+      article_id: "first",
+      username: "lurker",
+      body: "This is a newly added comment. How marvellous!",
+    };
+    return request(app)
+      .post(`/api/articles/${newComment.article_id}/comments`)
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: responds with helpful msg if sent non-existant article_id of correct type", () => {
+    const newComment = {
+      article_id: 99,
+      username: "lurker",
+      body: "This is a newly added comment. How marvellous!",
+    };
+    return request(app)
+      .post(`/api/articles/${newComment.article_id}/comments`)
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article or comment not found.");
       });
   });
 });
