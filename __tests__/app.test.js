@@ -98,7 +98,6 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then((res) => {
         const articlesOutput = res.body.articles;
-        console.log(articlesOutput);
         expect(articlesOutput).toHaveLength(13);
         articlesOutput.forEach((article) => {
           expect(article).toHaveProperty("author");
@@ -110,6 +109,47 @@ describe("GET /api/articles", () => {
           expect(article).toHaveProperty("article_img_url");
           expect(article).toHaveProperty("comment_count");
         });
+      });
+  });
+});
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: responds with array of comments for given article_id", () => {
+    const articleId = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}/comments`)
+      .expect(200)
+      .then((res) => {
+        const commentsOutput = res.body.comments;
+        console.log(commentsOutput);
+        expect(commentsOutput).toHaveLength(11);
+        commentsOutput.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
+      });
+  });
+  test("404: responds with helpful msg when given valid type of article_id but article with that id does not exist", () => {
+    const nonExistantArticleId = 99;
+    return request(app)
+      .get(`/api/articles/${nonExistantArticleId}/comments`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "No article or comments found for article_id: 99"
+        );
+      });
+  });
+  test("400: responds with bad request msg if sent invalid article_id type", () => {
+    const invalidArticleId = "random";
+    return request(app)
+      .get(`/api/articles/${invalidArticleId}/comments`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

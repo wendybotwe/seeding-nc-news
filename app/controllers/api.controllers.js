@@ -3,6 +3,7 @@ const {
   selectTopics,
   selectArticleById,
   selectArticles,
+  selectArticleCommentsByArticleId,
 } = require("../models/api.models.js");
 
 exports.getApi = (req, res) => {
@@ -31,14 +32,22 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  console.log(article_id, "article_id in the controller");
   selectArticleById(article_id)
     .then((article) => {
-      console.log(article, "in the controller");
       res.status(200).send({ article: article });
     })
     .catch((err) => {
-      console.log(err, "<< err in getArticleById controller");
+      next(err);
+    });
+};
+
+exports.getArticleCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  selectArticleCommentsByArticleId(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments: comments });
+    })
+    .catch((err) => {
       next(err);
     });
 };

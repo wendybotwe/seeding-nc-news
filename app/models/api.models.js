@@ -29,8 +29,22 @@ exports.selectArticleById = (articleId) => {
           msg: `No article found for article_id: ${articleId}`,
         });
       } else {
-        console.log(rows[0], "rows[0] in model");
         return rows[0];
       }
     });
+};
+
+exports.selectArticleCommentsByArticleId = (articleId) => {
+  const queryStr =
+    "SELECT comment_id, votes, created_at, author, body, article_id FROM comments WHERE article_id = $1 ORDER BY created_at DESC";
+  return db.query(queryStr, [articleId]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: `No article or comments found for article_id: ${articleId}`,
+      });
+    } else {
+      return rows;
+    }
+  });
 };
