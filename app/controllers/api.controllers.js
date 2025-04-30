@@ -6,6 +6,7 @@ const {
   selectArticleCommentsByArticleId,
   insertComment,
   updateVotesByArticleId,
+  deleteComment,
 } = require("../models/api.models.js");
 
 exports.getApi = (req, res) => {
@@ -76,6 +77,19 @@ exports.patchVotesByArticleId = (req, res, next) => {
   updateVotesByArticleId(article_id, inc_votes)
     .then((updatedArticle) => {
       res.status(200).send({ article: updatedArticle });
+    })
+    .catch(next);
+};
+
+exports.deleteCommentByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  const parsedCommentId = Number(comment_id);
+  if (typeof parsedCommentId !== "number") {
+    return res.status(400).send({ msg: "Bad request" });
+  }
+  deleteComment(comment_id)
+    .then(() => {
+      res.status(204).send(res.body);
     })
     .catch(next);
 };
