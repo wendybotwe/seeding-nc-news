@@ -295,3 +295,41 @@ describe("GET /api/users", () => {
       });
   });
 });
+describe("GET /api/articles (sorting queries)", () => {
+  test("200: responds with an array sorted by correct column and in correct order as specified", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=desc")
+      .expect(200)
+      .then((res) => {
+        const articlesOutput = res.body.articles;
+        expect(articlesOutput.length).toBeGreaterThan(0);
+        articlesOutput.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+        expect(articlesOutput[0].article_id).toBe(1);
+      });
+  });
+  test("400: responds with error msg when given invalid sort_by column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=random")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort_by query");
+      });
+  });
+  test("400: responds with error for invalid order value", () => {
+    return request(app)
+      .get("/api/articles?order=random")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order query");
+      });
+  });
+});
