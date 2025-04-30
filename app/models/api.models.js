@@ -19,6 +19,14 @@ exports.selectArticles = () => {
     });
 };
 
+exports.selectUsers = () => {
+  return db
+    .query("SELECT users.username, users.name, users.avatar_url FROM users")
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
 exports.selectArticleById = (articleId) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1", [articleId])
@@ -82,7 +90,6 @@ exports.deleteComment = (comment_id) => {
       comment_id,
     ])
     .then(({ rows }) => {
-      console.log(rows, "<<< rows in model");
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Comment not found." });
       }
