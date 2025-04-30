@@ -7,6 +7,7 @@ const {
   insertComment,
   updateVotesByArticleId,
   deleteComment,
+  selectUsers,
 } = require("../models/api.models.js");
 
 exports.getApi = (req, res) => {
@@ -27,6 +28,16 @@ exports.getArticles = (req, res, next) => {
   return selectArticles()
     .then((articles) => {
       res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  return selectUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch((err) => {
       next(err);

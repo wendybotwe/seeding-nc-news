@@ -223,7 +223,6 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then((response) => {
         const updatedArticle = response.body.article;
-        console.log(updatedArticle, "<< in test file");
         expect(updatedArticle.article_id).toBe(articleId);
         expect(updatedArticle.votes).toBe(50);
       });
@@ -258,7 +257,6 @@ describe("DELETE /api/comments/:comment_id", () => {
       .delete(`/api/comments/${commentId}`)
       .expect(204)
       .then(({ body }) => {
-        console.log(body);
         expect(body).toEqual({});
       });
   });
@@ -278,6 +276,22 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+describe("GET /api/users", () => {
+  test("200: responds with array of users with the properties username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((res) => {
+        const usersOutput = res.body.users;
+        expect(usersOutput).toHaveLength(4);
+        usersOutput.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
       });
   });
 });
