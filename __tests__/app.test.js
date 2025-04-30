@@ -131,7 +131,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("404: responds with helpful msg when given valid type of article_id but article with that id does not exist", () => {
+  test("404: responds with msg when given valid type of article_id but article with that id does not exist", () => {
     const nonExistantArticleId = 99;
     return request(app)
       .get(`/api/articles/${nonExistantArticleId}/comments`)
@@ -245,6 +245,36 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch(`/api/articles/${articleId}`)
       .send(IncreaseVotesBy)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: comment is deleted, no content is returned", () => {
+    const commentId = 1;
+    return request(app)
+      .delete(`/api/comments/${commentId}`)
+      .expect(204)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body).toEqual({});
+      });
+  });
+  test("404: responds with bad request msg when non-existant comment_id is used", () => {
+    const commentId = 99;
+    return request(app)
+      .delete(`/api/comments/${commentId}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found.");
+      });
+  });
+  test("400: responds with bad request msg if sent invalid comment_id type", () => {
+    const commentId = "something";
+    return request(app)
+      .delete(`/api/comments/${commentId}`)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
