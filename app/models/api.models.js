@@ -8,7 +8,7 @@ exports.selectTopics = () => {
     });
 };
 
-exports.selectArticles = (sort_by = "created_at", order = "desc") => {
+exports.selectArticles = (sort_by, order, topic) => {
   const validSortColumns = [
     "article_id",
     "title",
@@ -20,6 +20,9 @@ exports.selectArticles = (sort_by = "created_at", order = "desc") => {
   ];
   const validOrders = ["asc", "desc"];
 
+  order = order || "desc";
+  sort_by = sort_by || "created_at";
+
   if (!validSortColumns.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort_by query" });
   }
@@ -27,8 +30,31 @@ exports.selectArticles = (sort_by = "created_at", order = "desc") => {
   if (!validOrders.includes(order.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
-  let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author,articles.created_at, articles.votes,articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()}`;
-  return db.query(queryStr).then(({ rows }) => {
+  const queryValues = [];
+  let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
+
+  if (topic) {
+    queryStr += ` WHERE articles.topic =$1 `;
+    queryValues.push(topic);
+  }
+
+  queryStr += ` GROUP BY articles.article_id, articles.title, articles.topic, articles.author,articles.created_at, articles.votes,articles.article_img_url `;
+
+  const queryStrPlus = `SELECT * FROM (${queryStr}) AS article_data ORDER BY "${sort_by}" ${order.toUpperCase()}
+  `;
+  return db.query(queryStrPlus, queryValues).then(({ rows }) => {
+    if (rows.length === 0 && topic) {
+      return db
+        .query("SELECT * FROM topics WHERE slug = $1", [topic])
+        .then(({ rows: topicRows }) => {
+          if (topicRows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Topic not found." });
+          } else {
+            return [];
+          }
+        });
+    }
+
     return rows;
   });
 };

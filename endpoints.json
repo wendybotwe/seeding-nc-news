@@ -21,9 +21,10 @@
     "description": "serves an array of all articles, with an option to be sorted and ordered",
     "queries": [
       "sort_by : sorts by column",
-      "order : orders results either 'asc' or 'desc', defaults to 'desc'"
+      "order : orders results either 'asc' or 'desc', defaults to 'desc'",
+      "topic : serves articles for selected topic only"
     ],
-    "exampleRequest": "/api/articles?sort_by=votes&order=asc",
+    "exampleRequest": "/api/articles?sort_by=votes&order=asc&topic=mitch",
     "exampleResponse": {
       "articles": [
         {

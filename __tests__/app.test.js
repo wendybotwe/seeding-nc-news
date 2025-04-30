@@ -333,3 +333,33 @@ describe("GET /api/articles (sorting queries)", () => {
       });
   });
 });
+describe("GET /api/articles (topic query)", () => {
+  test("200: responds with only articles with topic specified", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const topicQueryOutput = body.articles;
+        expect(topicQueryOutput).toHaveLength(12);
+        topicQueryOutput.forEach((article) => {
+          expect(article.topic).toEqual("mitch");
+        });
+      });
+  });
+  test("200: responds with empty array for valid topic with no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("404: responds with msg when non-existent topic used", () => {
+    return request(app)
+      .get("/api/articles?topic=nothing")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic not found.");
+      });
+  });
+});
