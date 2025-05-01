@@ -69,7 +69,10 @@ exports.selectUsers = () => {
 
 exports.selectArticleById = (articleId) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [articleId])
+    .query(
+      "SELECT articles.*, COUNT(comments.comment_id):: INT AS comment_count FROM articles LEFT JOIN comments on articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id",
+      [articleId]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({

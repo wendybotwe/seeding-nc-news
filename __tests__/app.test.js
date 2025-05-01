@@ -49,7 +49,7 @@ describe("GET /api/topics", () => {
       });
   });
 });
-describe("GET /api/article/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: responds with article object for correct article_id", () => {
     const articleId = 5;
     return request(app)
@@ -70,6 +70,7 @@ describe("GET /api/article/:article_id", () => {
         expect(articleIdOutput.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
+        expect(articleIdOutput.comment_count).toBe(2);
       });
   });
   test("404: responds with helpful msg when given valid type of article_id but article with that id does not exist", () => {
