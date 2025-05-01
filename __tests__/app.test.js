@@ -349,7 +349,7 @@ describe("GET /api/articles (sorting queries)", () => {
           expect(article).toHaveProperty("article_img_url");
           expect(article).toHaveProperty("comment_count");
         });
-        expect(articlesOutput[0].article_id).toBe(1);
+        expect(articlesOutput).toBeSortedBy("votes", { descending: true });
       });
   });
   test("400: responds with error msg when given invalid sort_by column", () => {
