@@ -10,15 +10,48 @@ https://nc-news-by-wendy.onrender.com
 
 ## Set up info
 
-## NC News Seeding
+### Node
 
-Create .env files as below
+Install node.js
+
+Minimum requirements: v23.9.0
+
+(Check which version you currently have installed using `node -v`)
+
+### Postgres
+
+Minimum requirements: postgres (PostgreSQL) 14.17 (Homebrew)
+
+(Check which version you currently have installed using `postgres -V`)
+
+### GitHub
+
+https://github.com/wendybotwe/seeding-nc-news
+
+Clone this repo using
+
+`git clone https://github.com/wendybotwe/seeding-nc-news`
+
+### Install dependencies
+
+`npm install`
+
+### Create .env files
 
 .env.test
+
 `PGDATABASE=nc_news_test`
 
 .env.development
+
 `PGDATABASE=nc_news`
 
-.env.production
-`DATABASE_URL=`
+### Seed local database
+
+To run the run-seed script (which calls the seed function with development data) use:
+
+`npm run seed-dev`
+
+### Run tests
+
+`npm test`
