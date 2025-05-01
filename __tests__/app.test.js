@@ -154,13 +154,34 @@ describe("GET /api/articles/:article_id/comments", () => {
 
 describe("POST /api/articles/:article_id/comments", () => {
   test("201: responds with new comment info", () => {
+    const articleId = 2;
     const newComment = {
-      article_id: 2,
       username: "lurker",
       body: "This is a newly added comment. How marvellous!",
     };
     return request(app)
-      .post(`/api/articles/${newComment.article_id}/comments`)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const newlyCreatedComment = body.newComment;
+        expect(newlyCreatedComment.article_id).toBe(2);
+        expect(newlyCreatedComment.author).toBe("lurker");
+        expect(newlyCreatedComment.body).toBe(
+          "This is a newly added comment. How marvellous!"
+        );
+      });
+  });
+  test("201: ignores additional/unnecessary properties on request body", () => {
+    const articleId = 2;
+    const newComment = {
+      username: "lurker",
+      body: "This is a newly added comment. How marvellous!",
+      random: "Here's some random extra info the post request doens't need",
+      random_num: 7,
+    };
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
@@ -173,13 +194,13 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
   test("400: responds with bad request msg if sent invalid article_id type", () => {
+    const articleId = "first";
     const newComment = {
-      article_id: "first",
       username: "lurker",
       body: "This is a newly added comment. How marvellous!",
     };
     return request(app)
-      .post(`/api/articles/${newComment.article_id}/comments`)
+      .post(`/api/articles/${articleId}/comments`)
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
@@ -187,17 +208,31 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
   test("404: responds with msg if sent non-existant article_id of correct type", () => {
+    const articleId = 99;
     const newComment = {
-      article_id: 99,
       username: "lurker",
       body: "This is a newly added comment. How marvellous!",
     };
     return request(app)
-      .post(`/api/articles/${newComment.article_id}/comments`)
+      .post(`/api/articles/${articleId}/comments`)
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article or comment not found.");
+        expect(body.msg).toBe("Item not found.");
+      });
+  });
+  test("404: responds with msg if username does not exist", () => {
+    const articleId = 2;
+    const newComment = {
+      username: "wendy",
+      body: "I'd like to add a comment even though I'm not a known user!",
+    };
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Item not found.");
       });
   });
 });

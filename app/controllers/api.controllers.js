@@ -68,7 +68,8 @@ exports.getArticleCommentsByArticleId = (req, res, next) => {
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
-  const { article_id, username, body } = req.body;
+  const { username, body } = req.body;
+  const { article_id } = req.params;
   return insertComment(article_id, username, body)
     .then((newComment) => {
       if (newComment) {

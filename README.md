@@ -20,7 +20,7 @@ Minimum requirements: v23.9.0
 
 ### Postgres
 
-Minimum requirements: postgres (PostgreSQL) 14.17 (Homebrew)
+Minimum requirements: v8.13.3
 
 (Check which version you currently have installed using `postgres -V`)
 
