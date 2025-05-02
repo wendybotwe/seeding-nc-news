@@ -1,37 +1,18 @@
 const express = require("express");
 const app = express();
-
-const {
-  getApi,
-  getTopics,
-  getArticleById,
-  getArticles,
-  getArticleCommentsByArticleId,
-  postCommentByArticleId,
-  patchVotesByArticleId,
-  deleteCommentByCommentId,
-  getUsers,
-} = require("./app/controllers/api.controllers.js");
-
 app.use(express.json());
 
-app.get("/api", getApi);
+const apiRouter = require("./app/routes/api.router.js");
+const topicsRouter = require("./app/routes/topics.router.js");
+const usersRouter = require("./app/routes/users.router.js");
+const commentsRouter = require("./app/routes/comments.router.js");
+const articlesRouter = require("./app/routes/articles.router.js");
 
-app.get("/api/topics", getTopics);
-
-app.get("/api/articles", getArticles);
-
-app.get("/api/users", getUsers);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.get("/api/articles/:article_id/comments", getArticleCommentsByArticleId);
-
-app.post("/api/articles/:article_id/comments", postCommentByArticleId);
-
-app.patch("/api/articles/:article_id", patchVotesByArticleId);
-
-app.delete("/api/comments/:comment_id", deleteCommentByCommentId);
+app.use("/api", apiRouter);
+app.use("/api/topics", topicsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/comments", commentsRouter);
+app.use("/api/articles", articlesRouter);
 
 app.all("/api/*wrong", (req, res) => {
   res.status(404).send({ msg: "Path not found" });
