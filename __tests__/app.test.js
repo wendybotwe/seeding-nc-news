@@ -399,3 +399,29 @@ describe("GET /api/articles (topic query)", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("200: responds with user object for correct username", () => {
+    const username = "butter_bridge";
+    return request(app)
+      .get(`/api/users/${username}`)
+      .expect(200)
+      .then((response) => {
+        const userOutput = response.body.user;
+        expect(userOutput.username).toBe("butter_bridge");
+        expect(userOutput.avatar_url).toBe(
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        );
+        expect(userOutput.name).toBe("jonny");
+      });
+  });
+  test("404: responds with msg when given username that does not exist", () => {
+    const nonExistantUsername = "wendsleydale";
+    return request(app)
+      .get(`/api/users/${nonExistantUsername}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No user found.");
+      });
+  });
+});
